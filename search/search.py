@@ -172,6 +172,44 @@ def breadthFirstSearch(problem: SearchProblem):
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    state, actions, stepCost = (), [], 0
+
+    my_q = util.PriorityQueue()
+    my_q.push((problem.getStartState(), [], 0), 0)
+    visited = set()
+
+    while not my_q.isEmpty():
+        node = my_q.pop()
+        state = node[0]
+        actions = node[1]
+        stepCost = node[2]
+        
+        # DFS end condition
+        if problem.isGoalState(state):
+            return actions
+
+
+        # Skip any states that have been visited
+        if state in visited:
+            continue
+        visited.add(state)
+
+
+        
+
+        # Use getSuccessors() and add any successors not yet visited to the stack
+        # index[0] = successors
+        # index[1] = action
+        # index [2] = stepCost
+        for index in problem.getSuccessors(state):
+            if index[0] not in visited:
+                my_q.push((index[0], actions + [index[1]], stepCost + index[2]), stepCost + index[2])
+
+
+    # Default to returning an empty list just in case
+    return []
+
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -184,6 +222,44 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+
+    state, actions, stepCost = (), [], 0
+
+    my_q = util.PriorityQueue()
+    my_q.push((problem.getStartState(), [], 0), 0 + heuristic(problem.getStartState(), problem))
+    visited = set()
+
+    while not my_q.isEmpty():
+        node = my_q.pop()
+        state = node[0]
+        actions = node[1]
+        stepCost = node[2]
+        
+        # DFS end condition
+        if problem.isGoalState(state):
+            return actions
+
+
+        # Skip any states that have been visited
+        if state in visited:
+            continue
+        visited.add(state)
+
+
+        
+
+        # Use getSuccessors() and add any successors not yet visited to the stack
+        # index[0] = successors
+        # index[1] = action
+        # index [2] = stepCost
+        for index in problem.getSuccessors(state):
+            if index[0] not in visited:
+                my_q.push((index[0], actions + [index[1]], stepCost + index[2]), stepCost + index[2] + heuristic(index[0], problem))
+
+
+    # Default to returning an empty list just in case
+    return []
+
     util.raiseNotDefined()
 
 
