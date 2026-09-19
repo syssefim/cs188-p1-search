@@ -296,36 +296,59 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        visited = []
+        for corner in self.corners:
+            if self.startingPosition == corner:
+                visited.append(True)
+            else:
+                visited.append(False)
+        visited = tuple(visited)
+
+        return (self.startingPosition, visited)
 
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
+        cornersVisited = state[1]
+        return cornersVisited == (True, True, True, True)
         util.raiseNotDefined()
 
     def getSuccessors(self, state: Any):
-        """
-        Returns successor states, the actions they require, and a cost of 1.
-
-         As noted in search.py:
-            For a given state, this should return a list of triples, (successor,
-            action, stepCost), where 'successor' is a successor to the current
-            state, 'action' is the action required to get there, and 'stepCost'
-            is the incremental cost of expanding to that successor
-        """
-
         successors = []
-        for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+        position = state[0]
+        visited = state[1]
+        x = position[0]
+        y = position[1]
 
+        for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             "*** YOUR CODE HERE ***"
+            dx, dy = Actions.directionToVector(action)
+            nextx = int(x + dx)
+            nexty = int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+
+            if not hitsWall:
+                nextPosition = (nextx, nexty)
+
+                # Build the new visited flags, one per corner
+                nextVisited = []
+                for i in range(len(self.corners)):
+                    corner = self.corners[i]
+                    if visited[i] == True:
+                        # Already visited, stays visited
+                        nextVisited.append(True)
+                    elif nextPosition == corner:
+                        # Just stepped onto this corner
+                        nextVisited.append(True)
+                    else:
+                        nextVisited.append(False)
+                nextVisited = tuple(nextVisited)
+
+                nextState = (nextPosition, nextVisited)
+                successors.append((nextState, action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
